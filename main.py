@@ -28,7 +28,7 @@ app.add_middleware(
 )
 
 # --- Google AI (Gemini) API Setup ---
-GOOGLE_API_KEY = "***REMOVED***"
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 model = None
 
 
