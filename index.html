@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>yourfault.com - it's not me, it's you</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            light: '#79fcdc',
+                            DEFAULT: '#5dfdbe',
+                            dark: '#3b8b6f',
+                        },
+                    },
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+        
+        body, html {
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Pulse ring animation */
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.95);
+                opacity: 0.7;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.9;
+            }
+            100% {
+                transform: scale(0.95);
+                opacity: 0.7;
+            }
+        }
+
+        .pulse-ring {
+            animation: pulse-ring 1.5s ease-in-out infinite;
+        }
+
+        /* Waveform bars */
+        .waveform {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            height: 60px;
+        }
+
+        .waveform-bar {
+            width: 4px;
+            background: linear-gradient(to top, #5dfdbe, #79fcdc);
+            border-radius: 4px;
+            animation: wave 0.6s ease-in-out infinite;
+        }
+
+        .waveform-bar:nth-child(1) { animation-delay: 0s; }
+        .waveform-bar:nth-child(2) { animation-delay: 0.1s; }
+        .waveform-bar:nth-child(3) { animation-delay: 0.2s; }
+        .waveform-bar:nth-child(4) { animation-delay: 0.3s; }
+        .waveform-bar:nth-child(5) { animation-delay: 0.2s; }
+        .waveform-bar:nth-child(6) { animation-delay: 0.1s; }
+        .waveform-bar:nth-child(7) { animation-delay: 0s; }
+
+        @keyframes wave {
+            0%, 100% { height: 10px; }
+            50% { height: 40px; }
+        }
+
+        /* Glowing effect */
+        .glow {
+            box-shadow: 0 0 20px rgba(93, 253, 190, 0.6),
+                        0 0 40px rgba(93, 253, 190, 0.4),
+                        0 0 60px rgba(93, 253, 190, 0.2);
+        }
+
+        /* Record Button Visibility & Effects */
+        .record-btn {
+            background-color: #5dfdbe; /* brighter mint tone */
+            color: #111;
+            transform: scale(1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 25px rgba(93, 253, 190, 0.7),
+                        0 0 50px rgba(93, 253, 190, 0.3);
+        }
+
+        /* Hover for desktop */
+        .record-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+            background-color: #79fcdc;
+            box-shadow: 0 0 30px rgba(121, 252, 220, 0.8),
+                        0 0 60px rgba(121, 252, 220, 0.4);
+        }
+
+        /* Active press */
+        .record-btn:active:not(:disabled) {
+            transform: scale(0.95);
+        }
+
+        /* Disabled state */
+        .record-btn:disabled {
+            background-color: #2f2f2f !important;
+            color: #777 !important;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.08);
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        /* Listening state (red pulse) */
+        .record-btn.listening {
+            background-color: #ef4444 !important; /* Tailwind red-500 */
+            color: #fff;
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.8),
+                        0 0 60px rgba(239, 68, 68, 0.4);
+        }
+
+        /* Mobile-friendly scaling */
+        @media (max-width: 640px) {
+            .record-btn {
+                width: 120px;
+                height: 120px;
+                box-shadow: 0 0 18px rgba(93, 253, 190, 0.7);
+            }
+
+            #pulse-ring {
+                width: 160px;
+                height: 160px;
+            }
+        }
+
+       /* Fade in animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+
+        /* Text shimmer */
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+
+        .shimmer {
+            background: linear-gradient(
+                90deg,
+                #5dfdbe 0%,
+                #79fcdc 50%,
+                #5dfdbe 100%
+            );
+            background-size: 1000px 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 3s linear infinite;
+        }
+
+        /* Transcript bubbles */
+        .transcript {
+            background: rgba(93, 253, 190, 0.1);
+            border: 1px solid rgba(93, 253, 190, 0.3);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body class="bg-zinc-900 text-white flex items-center justify-center min-h-screen">
+
+    <!-- Main Container -->
+    <div class="w-full max-w-2xl p-8 text-center fade-in">
+        
+        <!-- Header -->
+        <h1 class="text-5xl font-bold text-white mb-3">
+            your<span class="shimmer">fault</span>
+        </h1>
+        <p class="text-sm text-zinc-500 mb-8">v2.0 • now with 100% more roasting</p>
+        
+        <!-- Status Message -->
+        <div class="min-h-[80px] mb-8">
+            <p class="text-xl text-zinc-400 mb-4 transition-all duration-300" id="status-message">
+                it's not me, it's you. press the button and tell me what's wrong.
+            </p>
+            
+            <!-- Transcript Display -->
+            <div id="transcript-display" class="transcript rounded-lg p-4 text-sm text-zinc-300 hidden">
+                <strong class="text-brand-DEFAULT">You:</strong> <span id="transcript-text"></span>
+            </div>
+        </div>
+
+        <!-- Waveform (shown when listening) -->
+        <div id="waveform-container" class="waveform mb-8 opacity-0 transition-opacity duration-300">
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+        </div>
+
+        <!-- Record Button -->
+        <div class="relative flex items-center justify-center mb-8">
+            <!-- Pulse Ring -->
+            <div id="pulse-ring" class="absolute w-56 h-56 bg-brand-dark rounded-full opacity-0 transition-opacity duration-300"></div>
+            
+            <!-- Main Button -->
+            <button id="record-button" class="record-btn relative w-48 h-48 bg-brand-DEFAULT text-zinc-900 rounded-full flex items-center justify-center shadow-2xl focus:outline-none focus:ring-4 focus:ring-brand-light focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed z-10">
+                <i id="button-icon-mic" class="ph-fill ph-microphone text-6xl text-zinc-900"></i>
+                
+                <svg id="button-icon-spinner" class="animate-spin h-16 w-16 text-zinc-900 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- AI Speaking Status -->
+        <div id="ai-status" class="flex items-center justify-center gap-2 text-brand-DEFAULT text-sm font-semibold opacity-0 transition-opacity duration-300">
+            <div class="w-2 h-2 bg-brand-DEFAULT rounded-full animate-pulse"></div>
+            AI is speaking...
+        </div>
+
+        <!-- New Chat Button -->
+        <button id="new-chat-btn" class="mt-8 px-6 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white rounded-full text-sm transition-all duration-300">
+            <i class="ph ph-arrow-clockwise mr-2"></i>start new chat
+        </button>
+
+        <!-- Error Display -->
+        <div id="error-display" class="mt-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm hidden">
+            <i class="ph ph-warning text-lg mr-2"></i>
+            <span id="error-text"></span>
+        </div>
+
+        <!-- Browser Check -->
+        <div id="browser-warning" class="mt-6 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-yellow-400 text-sm hidden">
+            <i class="ph ph-warning-circle text-lg mr-2"></i>
+            <span>Your browser might not support voice input. Use Chrome for best experience.</span>
+        </div>
+    </div>
+
+<script>
+        // ========================================
+        // SETUP & INITIALIZATION
+        // ========================================
+    
+        const elements = {
+            recordButton: document.getElementById('record-button'),
+            statusMessage: document.getElementById('status-message'),
+            pulseRing: document.getElementById('pulse-ring'),
+            iconMic: document.getElementById('button-icon-mic'),
+            iconSpinner: document.getElementById('button-icon-spinner'),
+            aiStatus: document.getElementById('ai-status'),
+            waveform: document.getElementById('waveform-container'),
+            transcriptDisplay: document.getElementById('transcript-display'),
+            transcriptText: document.getElementById('transcript-text'),
+            errorDisplay: document.getElementById('error-display'),
+            errorText: document.getElementById('error-text'),
+            newChatBtn: document.getElementById('new-chat-btn'),
+            browserWarning: document.getElementById('browser-warning')
+        };
+
+        let currentSessionId = null;
+        let isListening = false;
+        let isSpeaking = false;
+        let recognition = null;
+        let finalTranscript = ''; // Stores the complete transcript
+
+        // ========================================
+        // SPEECH RECOGNITION SETUP
+        // ========================================
+        
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.continuous = true; // **FIX 1: Keep listening**
+            recognition.lang = 'en-US';
+            recognition.interimResults = true; // Show interim results
+            recognition.maxAlternatives = 1;
+
+            recognition.onstart = () => {
+                console.log('🎤 Recognition started');
+                isListening = true;
+                updateUIForListening();
+                // **FIX 2: Inactivity timer removed**
+            };
+
+            // **FIX 3: Updated result handling for continuous mode**
+            recognition.onresult = (event) => {
+                let interimTranscript = '';
+                // Iterate through all results
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    const transcript = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        // Append final segments to our master transcript
+                        finalTranscript += transcript + ' ';
+                    } else {
+                        // Show the current interim segment
+                        interimTranscript += transcript;
+                    }
+                }
+
+                // Update the status message to show what's been heard so far
+                elements.statusMessage.textContent = `"${finalTranscript}${interimTranscript}..."`;
+            };
+
+            recognition.onerror = (event) => {
+                console.error('❌ Recognition error:', event.error);
+                handleRecognitionError(event.error);
+            };
+
+            // **FIX 4: Add auto-restart logic for robustness**
+            recognition.onend = () => {
+                console.log('🛑 Recognition ended');
+                if (isListening && !isSpeaking) {
+                    // Recognition ended, but user hasn't clicked stop.
+                    // This can happen on network drops or browser timeouts.
+                    // Just restart it to maintain the continuous session.
+                    console.log('♻️ Recognition auto-restarting...');
+                    try {
+                        recognition.start();
+                    } catch (e) {
+                        // Handle cases where it can't restart (e.g., page hidden)
+                        console.error('Failed to auto-restart recognition:', e);
+                        stopListening(); // Fallback to stopping
+                    }
+                }
+                // If isListening is false, it means stopListening() was called
+                // intentionally, so we do nothing.
+            };
+        } else {
+            showError("Your browser doesn't support voice input. Please use Chrome.");
+            elements.browserWarning.classList.remove('hidden');
+            elements.recordButton.disabled = true;
+        }
+
+        // ========================================
+        // SPEECH SYNTHESIS SETUP
+        // ========================================
+        
+        const synth = window.speechSynthesis;
+
+        // ========================================
+        // EVENT LISTENERS
+        // ========================================
+        
+        elements.recordButton.addEventListener('click', toggleListening);
+        elements.newChatBtn.addEventListener('click', startNewChat);
+
+        // ========================================
+        // CORE FUNCTIONS
+        // ========================================
+        
+        function toggleListening() {
+            if (isListening) {
+                stopListening();
+            } else {
+                startListening();
+            }
+        }
+
+        function startListening() {
+            if (!recognition) return;
+            
+            // Cancel any ongoing speech
+            synth.cancel();
+            hideError();
+            
+            // Reset transcript for new session
+            finalTranscript = '';
+            
+            try {
+                recognition.start();
+                // UI update happens in recognition.onstart
+            } catch (e) {
+                console.error('Error starting recognition:', e);
+                showError("Couldn't start listening. Try again.");
+            }
+        }
+
+        // **FIX 5: stopListening now processes the final transcript**
+        function stopListening() {
+            if (!recognition) return;
+            isListening = false;
+            
+            try {
+                recognition.stop();
+            } catch (e) {
+                console.log('Recognition already stopped');
+            }
+            
+            updateUIForIdle();
+
+            // NOW, process the transcript we built
+            const transcriptToProcess = finalTranscript.trim();
+            if (transcriptToProcess) {
+                console.log('✅ Manual stop, processing transcript:', transcriptToProcess);
+                handleFinalTranscript(transcriptToProcess);
+            } else {
+                console.log('🛑 Manual stop, no final transcript.');
+                // Reset status if nothing was said
+                elements.statusMessage.textContent = "it's not me, it's you. press the button and tell me what's wrong.";
+            }
+            
+            // Clear the transcript for the next run
+            finalTranscript = '';
+        }
+
+        // **FIX 6: handleFinalTranscript no longer calls stopListening()**
+        function handleFinalTranscript(transcript) {
+            if (!transcript.trim()) {
+                showError("I didn't catch that. Try again?");
+                return;
+            }
+
+            // Show transcript
+            elements.transcriptText.textContent = transcript;
+            elements.transcriptDisplay.classList.remove('hidden');
+            
+            sendToBackend(transcript);
+        }
+
+        function handleRecognitionError(error) {
+            switch(error) {
+                case 'no-speech':
+                    showError("I didn't hear anything. Try speaking louder?");
+                    break;
+                case 'audio-capture':
+                    showError("No microphone found. Check your settings.");
+                    break;
+                case 'not-allowed':
+                    showError("Microphone access denied. Enable it in settings.");
+                    break;
+                case 'network':
+                    showError("Network error. Check your connection.");
+                    break;
+                default:
+                    showError(`Error: ${error}. Try again.`);
+            }
+            stopListening();
+        }
+
+        async function sendToBackend(userText) {
+            elements.statusMessage.textContent = "thinking...";
+            showSpinner();
+            elements.recordButton.disabled = true;
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        text: userText,
+                        session_id: currentSessionId 
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                currentSessionId = data.session_id;
+                
+                elements.statusMessage.textContent = data.reply;
+     
+                // Play audio response
+                if (data.audio_url) {
+                    await playAudioFromUrl(data.audio_url);
+                } else {
+                    await playTextToSpeech(data.reply);
+                }
+
+                // ✅ FIX: Re-enable button after playback
+                elements.recordButton.disabled = false;
+                updateUIForIdle();
+                hideSpinner();
+                
+            } catch (error) {
+                console.error("Error:", error);
+                showError("Server error. Try again.");
+                hideSpinner();
+                elements.recordButton.disabled = false;
+            }
+        }
+
+
+        function playAudioFromUrl(url) {
+            return new Promise((resolve, reject) => {
+                const audio = new Audio(url);
+                isSpeaking = true;
+
+                audio.onplay = () => {
+                    updateUIForSpeaking();
+                };
+
+                audio.onended = () => {
+                    isSpeaking = false;
+                    // updateUIForIdle(); // Moved to sendToBackend
+                    // hideSpinner(); // Moved to sendToBackend
+                    
+                    // // Auto-restart listening for conversational flow
+                    // setTimeout(() => {
+                    //     if (!isListening) {
+                    //         startListening();
+                    //     }
+                    // }, 500);
+
+                    resolve();
+                };
+
+                audio.onerror = (e) => {
+                    console.error('Audio error:', e);
+                    isSpeaking = false;
+                    showError("Audio playback failed.");
+                    hideSpinner();
+                    elements.recordButton.disabled = false;
+                    reject(e);
+                };
+
+                audio.play().catch(e => {
+                    console.error('Play error:', e);
+                    reject(e);
+                });
+            });
+        }
+
+        function playTextToSpeech(text) {
+            return new Promise((resolve) => {
+                if (synth.speaking) {
+                    synth.cancel();
+                }
+
+                const utterance = new SpeechSynthesisUtterance(text);
+                isSpeaking = true;
+
+                utterance.onstart = () => updateUIForSpeaking();
+                
+                utterance.onend = () => {
+                    isSpeaking = false;
+                    // updateUIForIdle(); // Moved to sendToBackend
+                    // hideSpinner(); // Moved to sendToBackend
+                    // setTimeout(() => startListening(), 500);
+                    resolve();
+                };
+
+                utterance.onerror = (e) => {
+                    console.error('TTS error:', e);
+                    isSpeaking = false;
+                    hideSpinner();
+                    elements.recordButton.disabled = false;
+                    resolve();
+                };
+
+                synth.speak(utterance);
+            });
+        }
+
+        function startNewChat() {
+            if (currentSessionId) {
+                fetch('/api/clear', {
+                    method: 'POST',
+                  _headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ session_id: currentSessionId })
+                });
+            }
+            
+            currentSessionId = null;
+            elements.transcriptDisplay.classList.add('hidden');
+            elements.statusMessage.textContent = "it's not me, it's you. press the button and tell me what's wrong.";
+            hideError();
+            
+            // Show feedback
+            elements.newChatBtn.textContent = '✨ new chat started';
+            setTimeout(() => {
+                elements.newChatBtn.innerHTML = '<i class="ph ph-arrow-clockwise mr-2"></i>start new chat';
+            }, 2000);
+        }
+
+        // ========================================
+        // UI UPDATE FUNCTIONS
+        // ========================================
+        
+        function updateUIForListening() {
+            elements.recordButton.classList.remove('bg-brand-DEFAULT', 'hover:bg-brand-light');
+            elements.recordButton.classList.add('bg-red-500', 'glow');
+            elements.iconMic.classList.remove('ph-microphone');
+            elements.iconMic.classList.add('ph-stop');
+            elements.pulseRing.classList.remove('opacity-0');
+            elements.pulseRing.classList.add('opacity-100', 'pulse-ring');
+            elements.waveform.classList.remove('opacity-0');
+            elements.waveform.classList.add('opacity-100');
+            elements.statusMessage.textContent = "listening... speak now";
+        }
+
+        function updateUIForIdle() {
+            elements.recordButton.classList.add('bg-brand-DEFAULT', 'hover:bg-brand-light');
+            elements.recordButton.classList.remove('bg-red-500', 'glow');
+            elements.iconMic.classList.add('ph-microphone');
+            elements.iconMic.classList.remove('ph-stop');
+            elements.pulseRing.classList.add('opacity-0');
+            elements.pulseRing.classList.remove('opacity-100', 'pulse-ring');
+            elements.waveform.classList.add('opacity-0');
+            elements.waveform.classList.remove('opacity-100');
+            elements.aiStatus.classList.remove('opacity-100');
+             elements.aiStatus.classList.add('opacity-0');
+        }
+
+        function updateUIForSpeaking() {
+            elements.aiStatus.classList.remove('opacity-0');
+            elements.aiStatus.classList.add('opacity-100');
+        }
+
+        function showSpinner() {
+            elements.iconMic.classList.add('hidden');
+            elements.iconSpinner.classList.remove('hidden');
+        }
+
+        function hideSpinner() {
+            elements.iconMic.classList.remove('hidden');
+            elements.iconSpinner.classList.add('hidden');
+        }
+
+        function showError(message) {
+            elements.errorText.textContent = message;
+            elements.errorDisplay.classList.remove('hidden');
+            setTimeout(() => hideError(), 5000);
+        }
+
+        function hideError() {
+            elements.errorDisplay.classList.add('hidden');
+        }
+
+        // ========================================
+        // INITIALIZE
+        // ========================================
+        
+        console.log('🚀 App initialized');
+        console.log('🎤 Recognition available:', !!recognition);
+ </script>
+</body>
+</html>
